@@ -6,7 +6,25 @@
 </template>
 
 <script setup>
-import NavBar from "./components/Layout/NavBar.vue";
+/*
+ imports
+*/
+import { onMounted } from "vue";
+import NavBar from "./components/layout/NavBar.vue";
+import { useStoreAuth } from "@/stores/storeAuth.js";
+
+/*
+store
+*/
+const store = useStoreAuth();
+
+/*
+ mounted
+*/
+
+onMounted(() => {
+  store.init();
+});
 </script>
 
 <style>

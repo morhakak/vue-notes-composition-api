@@ -12,6 +12,7 @@
           aria-label="menu"
           aria-expanded="false"
           data-target="navbarBasicExample"
+          ref="navbarBurgerRef"
         >
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
@@ -23,12 +24,32 @@
         id="navbarBasicExample"
         class="navbar-menu"
         :class="{ 'is-active': showMobileNav }"
+        ref="navbarMenuRef"
       >
+        <div class="navbar-start">
+          <button
+            v-if="storeAuth.user.id"
+            @click="logout"
+            class="button is-small is-info mt-3 ml-3"
+          >
+            Log out {{ storeAuth.user.email }}
+          </button>
+        </div>
         <div class="navbar-end">
-          <RouterLink class="navbar-item" to="/" active-class="is-active">
+          <RouterLink
+            @click="showMobileNav = false"
+            class="navbar-item"
+            to="/"
+            active-class="is-active"
+          >
             Notes
           </RouterLink>
-          <RouterLink class="navbar-item" to="/stats" active-class="is-active">
+          <RouterLink
+            @click="showMobileNav = false"
+            class="navbar-item"
+            to="/stats"
+            active-class="is-active"
+          >
             Stats
           </RouterLink>
         </div>
@@ -38,12 +59,46 @@
 </template>
 
 <script setup>
+/*
+ imports
+ */
 import { ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
+import { useStoreAuth } from "@/stores/storeAuth";
+
+/*
+stores
+*/
+const storeAuth = useStoreAuth();
+
 /*
 Mobile nav
 */
-
 const showMobileNav = ref(false);
+
+/*
+ click outside to close
+ */
+const navbarMenuRef = ref(null);
+const navbarBurgerRef = ref(null);
+
+onClickOutside(
+  navbarMenuRef,
+  () => {
+    showMobileNav.value = false;
+  },
+  {
+    ignore: [navbarBurgerRef],
+  }
+);
+
+/*
+logout
+*/
+const logout = () => {
+  showMobileNav.value = false;
+  storeAuth.logoutUser();
+};
 </script>
 
 <style scoped>

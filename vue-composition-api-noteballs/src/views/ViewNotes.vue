@@ -1,41 +1,62 @@
 <template>
   <div class="notes">
-    <div class="card has-background-success-dark mb-4 p-4">
-      <div class="field">
-        <div class="control">
-          <textarea class="textarea" placeholder="Add a new note" />
-        </div>
+    <AddEditNote
+      v-model="newNote"
+      ref="addEditNoteRef"
+      placeholder="Add a new note"
+    >
+      <template #buttons>
+        <button
+          @click="addNote"
+          :disabled="!newNote"
+          class="button is-link has-background-success"
+        >
+          Add New Note
+        </button>
+      </template>
+    </AddEditNote>
+    <progress
+      v-if="!storeNotes.notesLoaded"
+      class="progress is-large is-success"
+      max="100"
+    />
+    <template v-else>
+      <NoteItem v-for="note in storeNotes.notes" :key="note.id" :note="note" />
+      <div
+        v-if="!storeNotes.notes.length"
+        class="is-size-4 has-text-centered has-text-grey-light is-family-monospace py-6"
+      >
+        No notes
       </div>
-
-      <div class="field is-grouped is-grouped-right">
-        <div class="control">
-          <button class="button is-link has-background-success">
-            Add New Note
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card mb-4">
-      <div class="card-content">
-        <div class="content">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a href="#" class="card-footer-item">Edit</a>
-        <a href="#" class="card-footer-item">Delete</a>
-      </footer>
-    </div>
+    </template>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+import NoteItem from "../components/notes/NoteItem.vue";
+import { useStoreNotes } from "../stores/storeNotes.js";
+import AddEditNote from "@/components/notes/AddEditNote.vue";
+import useWatchCharacters from "@/use/useWatchCharacters.js";
+/*
+store
+*/
+const storeNotes = useStoreNotes();
 
-<style lang="scss" scoped></style>
+/*
+notes
+*/
+const newNote = ref("");
+const addEditNoteRef = ref(null);
+
+const addNote = () => {
+  storeNotes.addNote(newNote.value);
+  newNote.value = "";
+  addEditNoteRef.value.focusTextarea();
+};
+
+/*
+ watch characters
+*/
+useWatchCharacters(newNote);
+</script>
