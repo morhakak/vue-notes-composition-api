@@ -24,7 +24,6 @@ export const useStoreAuth = defineStore("storeAuth", {
           this.user.email = user.email;
           this.router.push("/");
           storeNotes.init();
-          console.log("user logged in", user);
         } else {
           this.user = {};
           this.router.replace("/auth");
@@ -32,39 +31,34 @@ export const useStoreAuth = defineStore("storeAuth", {
         }
       });
     },
-    registerUser(credentials) {
-      createUserWithEmailAndPassword(
-        auth,
-        credentials.email,
-        credentials.password
-      )
-        .then((userCredential) => {
-          const user = userCredential.user;
-          //   console.log("user: ", user);
-        })
-        .catch((error) => {
-          //   console.log("error message: ", error.message);
-        });
+    async registerUser(credentials) {
+      try {
+        await createUserWithEmailAndPassword(
+          auth,
+          credentials.email,
+          credentials.password
+        );
+      } catch (error) {
+        console.log(error);
+      }
     },
-    loginUser(credentials) {
-      signInWithEmailAndPassword(auth, credentials.email, credentials.password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          //   console.log("user: ", user);
-        })
-        .catch((error) => {
-          //   console.log("error message: ", error);
-          //   console.log("error code: ", error.code);
-        });
+    async loginUser(credentials) {
+      try {
+        await signInWithEmailAndPassword(
+          auth,
+          credentials.email,
+          credentials.password
+        );
+      } catch (error) {
+        console.log(error);
+      }
     },
-    logoutUser() {
-      signOut(auth)
-        .then(() => {
-          //   console.log("user sign out");
-        })
-        .catch((error) => {
-          //   console.log("error: ", error);
-        });
+    async logoutUser() {
+      try {
+        await signOut(auth);
+      } catch (e) {
+        console.error(e);
+      }
     },
   },
 });
